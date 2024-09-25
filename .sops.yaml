@@ -1,0 +1,7 @@
+keys:
+  - &paul B7392409BD3C2841005CF18D535F2319906DF953
+
+creation_rules:
+  - path_regex: infra/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
