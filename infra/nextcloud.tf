@@ -65,8 +65,8 @@ resource "proxmox_vm_qemu" "nextcloud_vm" {
     os_type = "cloud-init"
     ipconfig0 = "ip=69.69.11.23/24,gw=69.69.11.1"
 
-    ciuser = "worker"
-    cipassword = "worker"
+    ciuser = data.sops_file.secrets.data["nextcloud_vm.user"]
+    cipassword = data.sops_file.secrets.data["nextcloud_vm.password"]
 
     sshkeys = file("${path.module}/../keys/paulkalhorn.ssh")    
 }
