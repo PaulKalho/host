@@ -1,11 +1,17 @@
 keys:
-  - &paul 456ED7C90F5F332CAE5D0B9C6A92EA2CBF14A770
-
+  - &paul EDB084ED8DD155B595A672C8E411EE12A8F5C363
+  - &nextcloud age1t8ckj7amsqnqrwmkyxac35wwkmeaa6djgcnnltt5gy9uggaf6qcqas5wxl 
 creation_rules:
-  - path_regex: infra/secrets.yaml
+  - path_regex: infra/nextcloud/secrets.yaml
     key_groups:
       - pgp: [ *paul ]
 
   - path_regex: hosts/nextcloud/secrets.yaml
     key_groups:
       - pgp: [ *paul ]
+        age: [ *nextcloud ]
+
+  - path_regex: hosts/common/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+        age: [ *nextcloud ]

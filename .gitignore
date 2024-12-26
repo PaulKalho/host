@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,windows,linux,macos,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,windows,linux,macos,git
 
+tmp/
+secrets/
+
 ### Terraform ###
 *.tfstate
 *.tfstate.backup

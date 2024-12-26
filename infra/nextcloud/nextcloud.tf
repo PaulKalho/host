@@ -68,5 +68,8 @@ resource "proxmox_vm_qemu" "nextcloud_vm" {
     ciuser = data.sops_file.secrets.data["nextcloud_vm.user"]
     cipassword = data.sops_file.secrets.data["nextcloud_vm.password"]
 
-    sshkeys = file("${path.module}/../keys/paulkalhorn.ssh")    
+    sshkeys = file("${path.module}/../../keys/paulkalhorn.pub")    
+
+    bios = "ovmf"
+    boot = "order=scsi0;ide2;net0"
 }
