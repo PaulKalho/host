@@ -20,6 +20,8 @@
                 pkgs.nixos-anywhere
                 pkgs.nixos-rebuild
                 pkgs.ssh-to-age
+                pkgs.mkpasswd
+                pkgs.borgbackup
             ];
         };
 
@@ -30,7 +32,7 @@
                     ./hosts/nextcloud/configuration.nix
                     ./hosts/nextcloud/disk-configuration.nix
                     ./hosts/nextcloud/hardware-configuration.nix
-                    ./hosts/common/users.nix
+                    ./hosts/modules/users.nix
                     disko.nixosModules.disko
                     sops-nix.nixosModules.default
                     {
