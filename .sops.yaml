@@ -11,6 +11,11 @@ creation_rules:
       - pgp: [ *paul ]
         age: [ *nextcloud ]
 
+  - path_regex: hosts/nextcloud/nextcloud-secrets.json
+    key_groups:
+      - pgp: [ *paul ]
+        age: [ *nextcloud ]
+
   - path_regex: hosts/common/secrets.yaml
     key_groups:
       - pgp: [ *paul ]

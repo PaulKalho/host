@@ -1,17 +1,20 @@
 { config, pkgs, modulesPath, lib, ... }:
 let
     dbDumpPath = "/tmp/nextcloud-db.sql";
-    pg_dump = "${pkgs.postgresql}/bin/pg_dump";
+    mysqldump = "${pkgs.mariadb_114}/bin/mysqldump";
     runAs = user: cmd: "${pkgs.sudo}/bin/sudo -u ${user} -- ${cmd}";
 in {
     nixpkgs.hostPlatform = "x86_64-linux";
     
     environment.systemPackages = with pkgs; [ 
-        borgbackup 
+        borgbackup
     ];
 
     sops.secrets = {
         "nextcloud/adminPass" = {
+            owner = "nextcloud";
+        };
+        "nextcloud/secretsJson" = {
             owner = "nextcloud";
         };
         "backups/remotePrivateKey" = {
@@ -51,8 +54,8 @@ in {
             echo "Enabling maintenance mode..."
             ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
 
-            echo "Dumping PostgreSQL database..."
-            ${runAs "postgres" "${pg_dump} nextcloud > ${dbDumpPath}"} || exit 1
+            echo "Dumping MariaDB database..."
+            ${mysqldump} --socket=/run/mysqld/mysqld.sock --skip-ssl -u nextcloud nextcloud > ${dbDumpPath} || exit 1
         '';
         postHook = ''
             echo "Disabling maintenance mode..."
@@ -60,26 +63,36 @@ in {
             
             rm -rf ${dbDumpPath}
         '';
-        # TODO: Add settings for schedule & how many backups will be saved 
+        startAt = "daily";
+        prune.keep = {
+            daily = 7; # Keep 7 daily 
+            weekly = 4; # Keep 4 Weekly
+            monthly = 3; # Keep 12 monthly 
+        };
     };
+    
+    environment.etc."nextcloud-secrets.json".source = config.sops.secrets."nextcloud/secretsJson".path;
 
     services.nextcloud = {
       enable = true;
       hostName = "cloud.kalhorn.org";
       configureRedis = true;
+      package = pkgs.nextcloud31;
       database.createLocally = true;
-      package = pkgs.nextcloud28;
       config = {
-        dbtype = "pgsql";
+        dbtype = "mysql";
         adminuser = "admin";
         adminpassFile = config.sops.secrets."nextcloud/adminPass".path; 
       };
       settings = {
+        overwriteprotocol = "https";
         trusted_domains = [
             "cloud.kalhorn.org"
+            "cloud.gepaya.de"
             "69.69.11.23"
         ];
       };
+      secretFile = "/etc/nextcloud-secrets.json";
       maxUploadSize = "2G";
     };
 
@@ -91,9 +104,11 @@ in {
         settings.PubkeyAuthentication = "yes";
         settings.PasswordAuthentication = false;
     };
+
+    services.nginx.enable = true;
     
     # TODO: Define somewhere else
     sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
-    # TODO: Set State Version!
+    system.stateVersion = "24.11";
 }

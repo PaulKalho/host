@@ -1,6 +1,6 @@
 {
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
         sops-nix.url = "github:Mic92/sops-nix";
         disko = {
             url = "github:nix-community/disko";

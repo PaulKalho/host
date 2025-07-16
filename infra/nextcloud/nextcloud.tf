@@ -2,7 +2,7 @@ terraform {
     required_providers {
         proxmox = {
             source = "telmate/proxmox"
-            version = "3.0.1-rc4"
+            version = "3.0.2-rc01"
         }
         sops = {
             source = "carlpett/sops"
@@ -22,54 +22,58 @@ provider "proxmox" {
     pm_tls_insecure = true
 }
 
-resource "proxmox_vm_qemu" "nextcloud_vm" {
-    name = "nextcloud-vm"
-    target_node = "Proxmox-VE"
+resource "proxmox_vm_qemu" "nextcloud_nixos_vm" {
+  name        = "nextcloud-nixos-vm"
+  target_node = "Proxmox-VE"
 
-    clone = "ubuntu-cloudinit"
+  clone = "ubuntu-cloudinit"
 
-    cores = 4
+  cpu {
+    cores   = 4
     sockets = 1
-    cpu = "host"
-    memory = 4096
-    scsihw = "virtio-scsi-pci"
+  }
 
-    network {
-        bridge = "vmbr1"
-        model = "virtio"
-        tag = "10"
-    } 
+  memory  = 10240
+  scsihw  = "virtio-scsi-pci"
 
-    disks {
-        ide {
-            ide2 {
-                cloudinit {
-                    storage = "local"
-                }
-            }
+  network {
+    id     = 0
+    bridge = "vmbr1"
+    model  = "virtio"
+    tag    = 10
+  }
+
+  disks {
+    ide {
+      ide2 {
+        cloudinit {
+          storage = "local"
         }
-        scsi {
-            scsi0 {
-                disk {
-                    size = 20
-                    storage = "local"
-                }
-            }
+      }
+    }
+    scsi {
+      scsi0 {
+        disk {
+          size    = 500
+          storage = "tbstorage"
         }
+      }
     }
+  }
 
-    serial {
-        id = 0
-    }
+  serial {
+    id   = 0
+    type = "socket"
+  }
 
-    os_type = "cloud-init"
-    ipconfig0 = "ip=69.69.11.23/24,gw=69.69.11.1"
+  os_type   = "cloud-init"
+  ipconfig0 = "ip=69.69.11.23/24,gw=69.69.11.1"
 
-    ciuser = data.sops_file.secrets.data["nextcloud_vm.user"]
-    cipassword = data.sops_file.secrets.data["nextcloud_vm.password"]
+  ciuser    = data.sops_file.secrets.data["nextcloud_vm.user"]
+  cipassword = data.sops_file.secrets.data["nextcloud_vm.password"]
 
-    sshkeys = file("${path.module}/../../keys/paulkalhorn.pub")    
+  sshkeys = file("${path.module}/../../keys/paulkalhorn.pub")
 
-    bios = "ovmf"
-    boot = "order=scsi0;ide2;net0"
+  bios = "ovmf"
+  boot = "order=scsi0;ide2;net0"
 }
