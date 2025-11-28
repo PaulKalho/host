@@ -1,0 +1,3 @@
+module "nextcloud" {
+	source = "./nextcloud"
+}
