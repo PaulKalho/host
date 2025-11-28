@@ -13,7 +13,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
     in {
         devShells.${system}.default = pkgs.mkShell {
-            buildInputs = [
+            packages = [
                 pkgs.sops
                 pkgs.opentofu
                 pkgs.git

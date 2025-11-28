@@ -60,4 +60,6 @@ resource "proxmox_vm_qemu" "vm" {
 
 	bios = "ovmf"
 	boot = "order=scsi0;ide2;net0"
+
+	tags = var.tags
 }

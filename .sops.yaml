@@ -10,6 +10,10 @@ creation_rules:
     key_groups:
       - pgp: [ *paul ]
 
+  - path_regex: infra/vaultwarden/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+
   - path_regex: hosts/nextcloud/secrets.yaml
     key_groups:
       - pgp: [ *paul ]
