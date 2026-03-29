@@ -26,14 +26,14 @@
 
   networking = {
     useDHCP = false;
-    hostName = "nextcloudvm";
+    hostName = "vaultwarden";
     # TODO: domain
-    domain = "test.cloud.gepaya.de";
+    domain = "vault.kalhorn.org";
 
     interfaces.eth0 = {
       ipv4.addresses = [
         {
-          address = "69.69.11.23";
+          address = "69.69.11.24";
           prefixLength = 24;
         }
       ];
@@ -41,6 +41,7 @@
     firewall.allowedTCPPorts = [
       80
       443
+      8222
     ];
 
     defaultGateway = "69.69.11.1";

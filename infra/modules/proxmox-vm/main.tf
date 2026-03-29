@@ -9,7 +9,7 @@ terraform {
 resource "proxmox_vm_qemu" "vm" {
 	name        = var.name
 	target_node = var.target_node
-	
+
 	clone = var.clone
 	full_clone = var.clone != null ? true : false
 

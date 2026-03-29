@@ -25,4 +25,4 @@ variable "ciuser" {}
 variable "cipassword" {}
 variable "sshkey_file" {}
 
-variable "tags" { type = string }        
+variable "tags" { type = string }

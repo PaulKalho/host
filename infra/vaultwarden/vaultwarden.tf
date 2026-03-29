@@ -18,19 +18,19 @@ module "vaultwarden_vm" {
 
 	clone = "ubuntu-cloudinit"
 
-	cores = 1
+	cores = 2
 	sockets = 1
-	memory   = 512
-	
+	memory   = 2048
+
 	network_bridge = "vmbr1"
 	vlan_tag       = 10
-	
+
 	ip             = "69.69.11.24"
 	netmask        = 24
 	gateway        = "69.69.11.1"
 
 	cloudinit_storage = "local"
-	disk_size		 = 8
+	disk_size		 = 25
 	disk_storage     = "tbstorage"
 
 	ciuser     = data.sops_file.secrets.data["vaultwarden.user"]
