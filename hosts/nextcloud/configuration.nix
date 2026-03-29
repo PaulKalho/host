@@ -84,7 +84,7 @@ in
     enable = true;
     hostName = "cloud.kalhorn.org";
     configureRedis = true;
-    package = pkgs.nextcloud31;
+    package = pkgs.nextcloud33;
     database.createLocally = true;
     config = {
       dbtype = "mysql";

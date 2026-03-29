@@ -5,3 +5,7 @@ module "nextcloud" {
 module "vaultwarden" {
 	source = "./vaultwarden"
 }
+
+module "stirlingpdf" {
+	source = "./stirlingpdf"
+}

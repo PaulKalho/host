@@ -2,6 +2,7 @@ keys:
   - &paul EDB084ED8DD155B595A672C8E411EE12A8F5C363
   - &nextcloud age1t8ckj7amsqnqrwmkyxac35wwkmeaa6djgcnnltt5gy9uggaf6qcqas5wxl
   - &vaultwarden age1nzxq4dn3mnkzl44lxx7ew0mlyfj0jgx7wlenpadq3ej6m332dagsqltxa6
+  - &stirlingpdf age1gcsaxljg3g0vqstpaefg8mlk9fscne8nc0cunyazwvy8thzy544sd2clk6
 creation_rules:
   - path_regex: infra/secrets.yaml
     key_groups:
@@ -15,6 +16,10 @@ creation_rules:
     key_groups:
       - pgp: [ *paul ]
 
+  - path_regex: infra/stirlingpdf/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+
   - path_regex: hosts/nextcloud/secrets.yaml
     key_groups:
       - pgp: [ *paul ]
@@ -24,3 +29,12 @@ creation_rules:
     key_groups:
       - pgp: [ *paul ]
         age: [ *vaultwarden ]
+
+  - path_regex: hosts/stirlingpdf/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+        age: [ *stirlingpdf ]
+
+
+
+

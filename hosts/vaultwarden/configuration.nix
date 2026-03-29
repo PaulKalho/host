@@ -64,6 +64,7 @@
 
   services.vaultwarden = {
     enable = true;
+    package = pkgs.unstable.vaultwarden;
 
     config = {
       DOMAIN = "https://vault.kalhorn.org";
