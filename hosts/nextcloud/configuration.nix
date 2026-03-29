@@ -9,10 +9,11 @@ let
   mysqldump = "${pkgs.mariadb_114}/bin/mysqldump";
 in
 {
-  nixpkgs.hostPlatform = "x86_64-linux";
-
-  environment.systemPackages = with pkgs; [
-    borgbackup
+  imports = [
+    ../modules/base.nix
+    ../modules/networking.nix
+    ../modules/qemu.nix
+    ../modules/backup.nix
   ];
 
   sops.secrets = {
@@ -30,56 +31,14 @@ in
     "backups/remoteRepo" = { };
   };
 
-  services.borgbackup.jobs.nextcloud = {
-    # We need to allow borg to read/write to nextcloud directory for enabling maintenance mode
-    readWritePaths = [
-      "/var/lib/nextcloud/"
-    ];
-    paths = [
-      "/var/lib/nextcloud/config"
-      "/var/lib/nextcloud/data"
-      "${dbDumpPath}"
-    ];
-    environment = {
-      BORG_PASSPHRASE_FD = config.sops.secrets."backups/borgPassphrase".path;
-      BORG_RSH = "ssh -p23 -i ${
-        config.sops.secrets."backups/remotePrivateKey".path
-      } -o StrictHostKeyChecking=no";
-    };
-    # Placeholder will be replaced from the sops file in the preHook
-    repo = "ssh://placeholder@localhost/dummy-repo";
-    encryption = {
-      mode = "repokey";
-      passCommand = "cat ${config.sops.secrets."backups/borgPassphrase".path}";
-    };
-    compression = "lz4";
-    exclude = [ "/var/lib/nextcloud/tmp/*" ];
-    preHook = ''
-      # Set the BORG_REPO from the sops file
-      export BORG_REPO=$(cat ${config.sops.secrets."backups/remoteRepo".path})
-
-      echo "Enabling maintenance mode..."
-      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
-
-      echo "Dumping MariaDB database..."
-      ${mysqldump} --socket=/run/mysqld/mysqld.sock --skip-ssl -u nextcloud nextcloud > ${dbDumpPath} || exit 1
-    '';
-    postHook = ''
-      echo "Disabling maintenance mode..."
-      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
-
-      rm -rf ${dbDumpPath}
-    '';
-    startAt = "daily";
-    prune.keep = {
-      daily = 7; # Keep 7 daily
-      weekly = 4; # Keep 4 Weekly
-      monthly = 3; # Keep 12 monthly
-    };
+  deployment = {
+    ip = "69.69.11.23";
+    gateway = "69.69.11.1";
+    hostname = "nextcloud";
+    domain = "cloud.kalhorn.org";
   };
 
   environment.etc."nextcloud-secrets.json".source = config.sops.secrets."nextcloud/secretsJson".path;
-
   services.nextcloud = {
     enable = true;
     hostName = "cloud.kalhorn.org";
@@ -103,19 +62,37 @@ in
     maxUploadSize = "2G";
   };
 
-  programs.zsh.enable = true;
-
-  services.openssh = {
+  services.backup = {
     enable = true;
-    settings.PermitRootLogin = lib.mkForce "prohibit-password";
-    settings.PubkeyAuthentication = "yes";
-    settings.PasswordAuthentication = false;
+
+    readWritePaths = [
+      "/var/lib/nextcloud/"
+    ];
+    paths = [
+      "/var/lib/nextcloud/config"
+      "/var/lib/nextcloud/data"
+      "${dbDumpPath}"
+    ];
+    exclude = [ "/var/lib/nextcloud/tmp/*" ];
+
+    extraPreHook = ''
+      # Set the BORG_REPO from the sops file
+      export BORG_REPO=$(cat ${config.sops.secrets."backups/remoteRepo".path})
+
+      echo "Enabling maintenance mode..."
+      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
+
+      echo "Dumping MariaDB database..."
+      ${mysqldump} --socket=/run/mysqld/mysqld.sock --skip-ssl -u nextcloud nextcloud > ${dbDumpPath} || exit 1
+    '';
+
+    extraPostHook = ''
+      echo "Disabling maintenance mode..."
+      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
+
+      rm -rf ${dbDumpPath}
+    '';
   };
 
-  services.nginx.enable = true;
-
-  # TODO: Define somewhere else
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-
-  system.stateVersion = "24.11";
 }

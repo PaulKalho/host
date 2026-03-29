@@ -1,14 +1,14 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 {
-  nixpkgs.hostPlatform = "x86_64-linux";
-
-  environment.systemPackages = with pkgs; [
-    borgbackup
+  imports = [
+    ../modules/base.nix
+    ../modules/networking.nix
+    ../modules/qemu.nix
+    ../modules/backup.nix
   ];
 
   sops.secrets = {
@@ -23,43 +23,12 @@
     "backups/remoteRepo" = { };
   };
 
-  services.borgbackup.jobs.vaultwarden = {
-    paths = [
-      "/var/lib/vaultwarden"
-    ];
-
-    environment = {
-      BORG_PASSPHRASE_FD = config.sops.secrets."backups/borgPassphrase".path;
-      BORG_RSH = "ssh -p23 -i ${
-        config.sops.secrets."backups/remotePrivateKey".path
-      } -o StrictHostKeyChecking=no";
-    };
-
-    repo = "ssh://placeholder@localhost/dummy-repo";
-    encryption = {
-      mode = "repokey";
-      passCommand = "cat ${config.sops.secrets."backups/borgPassphrase".path}";
-    };
-    compression = "lz4";
-
-    preHook = ''
-      export BORG_REPO=$(cat ${config.sops.secrets."backups/remoteRepo".path})
-
-      echo "Stopping Vaultwarden..."
-      systemctl stop vaultwarden
-    '';
-
-    postHook = ''
-      echo "Starting Vaultwarden..."
-      systemctl start vaultwarden
-    '';
-
-    startAt = "daily";
-    prune.keep = {
-      daily = 7;
-      weekly = 4;
-      monthly = 3;
-    };
+  deployment = {
+    ip = "69.69.11.24";
+    gateway = "69.69.11.1";
+    hostname = "vaultwarden";
+    domain = "vault.kalhorn.org";
+    extraTCPPorts = [ 8222 ];
   };
 
   services.vaultwarden = {
@@ -74,16 +43,24 @@
       ROCKET_ADDRESS = "0.0.0.0";
     };
   };
-  programs.zsh.enable = true;
 
-  services.openssh = {
+  services.backup = {
     enable = true;
-    settings.PermitRootLogin = lib.mkForce "prohibit-password";
-    settings.PubkeyAuthentication = "yes";
-    settings.PasswordAuthentication = false;
+
+    paths = [
+      "var/lib/vaultwarden"
+    ];
+
+    extraPreHook = ''
+      echo "Stopping Vaultwarden..."
+      systemctl stop vaultwarden
+    '';
+
+    extraPostHook = ''
+      echo "Starting Vaultwarden..."
+      systemctl start vaultwarden
+    '';
   };
 
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-
-  system.stateVersion = "24.11";
 }

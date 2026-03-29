@@ -1,10 +1,18 @@
+{ pkgs, ... }:
 {
-  pkgs,
-  lib,
-  ...
-}:
-{
-  nixpkgs.hostPlatform = "x86_64-linux";
+  imports = [
+    ../modules/base.nix
+    ../modules/networking.nix
+    ../modules/qemu.nix
+  ];
+
+  deployment = {
+    ip = "69.69.11.25";
+    gateway = "69.69.11.1";
+    hostname = "stirlingpdf";
+    domain = "pdf.kalhorn.org";
+    extraTCPPorts = [ 8080 ];
+  };
 
   services.stirling-pdf = {
     enable = true;
@@ -15,16 +23,6 @@
       SECURITY_ENABLELOGIN = "true";
     };
   };
-  programs.zsh.enable = true;
-
-  services.openssh = {
-    enable = true;
-    settings.PermitRootLogin = lib.mkForce "prohibit-password";
-    settings.PubkeyAuthentication = "yes";
-    settings.PasswordAuthentication = false;
-  };
 
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-
-  system.stateVersion = "24.11";
 }

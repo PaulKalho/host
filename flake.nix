@@ -45,7 +45,6 @@
           modules = [
             ./hosts/nextcloud/configuration.nix
             ./hosts/nextcloud/disk-configuration.nix
-            ./hosts/nextcloud/hardware-configuration.nix
             ./hosts/modules/users.nix
             disko.nixosModules.disko
             sops-nix.nixosModules.default
@@ -63,7 +62,6 @@
             }
             ./hosts/vaultwarden/configuration.nix
             ./hosts/vaultwarden/disk-configuration.nix
-            ./hosts/vaultwarden/hardware-configuration.nix
             ./hosts/modules/users.nix
             disko.nixosModules.disko
             sops-nix.nixosModules.default
@@ -81,7 +79,6 @@
             }
             ./hosts/stirlingpdf/configuration.nix
             ./hosts/stirlingpdf/disk-configuration.nix
-            ./hosts/stirlingpdf/hardware-configuration.nix
             ./hosts/modules/users.nix
             disko.nixosModules.disko
             sops-nix.nixosModules.default
