@@ -4,6 +4,9 @@
     ../modules/base.nix
     ../modules/networking.nix
     ../modules/qemu.nix
+
+    ../modules/monitoring/agent.nix
+    ../modules/monitoring/promtail.nix
   ];
 
   deployment = {
@@ -11,7 +14,10 @@
     gateway = "69.69.11.1";
     hostname = "stirlingpdf";
     domain = "pdf.kalhorn.org";
-    extraTCPPorts = [ 8080 ];
+    extraTCPPorts = [
+      8080
+      9100
+    ];
   };
 
   services.stirling-pdf = {
@@ -23,6 +29,9 @@
       SECURITY_ENABLELOGIN = "true";
     };
   };
+
+  services.monitoring.agent.enable = true;
+  services.monitoring.promtail.enable = true;
 
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 }

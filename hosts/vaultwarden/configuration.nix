@@ -9,6 +9,9 @@
     ../modules/networking.nix
     ../modules/qemu.nix
     ../modules/backup.nix
+
+    ../modules/monitoring/agent.nix
+    ../modules/monitoring/promtail.nix
   ];
 
   sops.secrets = {
@@ -28,7 +31,10 @@
     gateway = "69.69.11.1";
     hostname = "vaultwarden";
     domain = "vault.kalhorn.org";
-    extraTCPPorts = [ 8222 ];
+    extraTCPPorts = [
+      8222
+      9100
+    ];
   };
 
   services.vaultwarden = {
@@ -48,7 +54,7 @@
     enable = true;
 
     paths = [
-      "var/lib/vaultwarden"
+      "/var/lib/vaultwarden"
     ];
 
     extraPreHook = ''
@@ -61,6 +67,9 @@
       systemctl start vaultwarden
     '';
   };
+
+  services.monitoring.agent.enable = true;
+  services.monitoring.promtail.enable = true;
 
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 }

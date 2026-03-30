@@ -14,6 +14,9 @@ in
     ../modules/networking.nix
     ../modules/qemu.nix
     ../modules/backup.nix
+
+    ../modules/monitoring/agent.nix
+    ../modules/monitoring/promtail.nix
   ];
 
   sops.secrets = {
@@ -36,6 +39,7 @@ in
     gateway = "69.69.11.1";
     hostname = "nextcloud";
     domain = "cloud.kalhorn.org";
+    extraTCPPorts = [ 9100 ];
   };
 
   environment.etc."nextcloud-secrets.json".source = config.sops.secrets."nextcloud/secretsJson".path;
@@ -93,6 +97,9 @@ in
       rm -rf ${dbDumpPath}
     '';
   };
+
+  services.monitoring.agent.enable = true;
+  services.monitoring.promtail.enable = true;
 
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 }

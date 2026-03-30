@@ -9,3 +9,7 @@ module "vaultwarden" {
 module "stirlingpdf" {
 	source = "./stirlingpdf"
 }
+
+module "monitoring" {
+	source = "./monitoring"
+}

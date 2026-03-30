@@ -87,6 +87,23 @@
             }
           ];
         };
+
+        monitoring = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            {
+              nixpkgs.overlays = [ overlay-unstable ];
+            }
+            ./hosts/monitoring/configuration.nix
+            ./hosts/monitoring/disk-configuration.nix
+            ./hosts/modules/users.nix
+            disko.nixosModules.disko
+            sops-nix.nixosModules.default
+            {
+              sops.defaultSopsFile = ./hosts/monitoring/secrets.yaml;
+            }
+          ];
+        };
       };
     };
 }
