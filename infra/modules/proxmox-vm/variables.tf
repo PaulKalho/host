@@ -1,9 +1,9 @@
 variable "name" {}
 variable "target_node" {}
 variable "clone" {
-	type = string
-	default = null
-	nullable = true
+  type     = string
+  default  = null
+  nullable = true
 }
 
 variable "cores" { type = number }

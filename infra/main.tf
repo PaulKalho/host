@@ -1,15 +1,15 @@
 module "nextcloud" {
-	source = "./nextcloud"
+  source = "./nextcloud"
 }
 
 module "vaultwarden" {
-	source = "./vaultwarden"
+  source = "./vaultwarden"
 }
 
 module "stirlingpdf" {
-	source = "./stirlingpdf"
+  source = "./stirlingpdf"
 }
 
 module "monitoring" {
-	source = "./monitoring"
+  source = "./monitoring"
 }

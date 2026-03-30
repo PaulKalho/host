@@ -25,7 +25,7 @@ jobs:
       - name: Nix flake check
         run: nix flake check
 
-      # TODO: build host
+      # TODO: build hosts
   terraform:
     name: Terraform Checks
     runs-on: ubuntu-latest
@@ -38,14 +38,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: Setup Tofu
+        uses: opentofu/setup-opentofu@v1
 
-      - name: Terraform fmt
-        run: terraform fmt -check -recursive
+      - name: Tofu fmt
+        run: tofu fmt -check -recursive
 
-      - name: Terraform init (no backend)
-        run: terraform init -backend=false
+      - name: Tofu init (no backend)
+        run: tofu init -backend=false -input=false
 
-      - name: Terraform validate
-        run: terraform validate
+      - name: Tofu validate
+        run: tofu validate
