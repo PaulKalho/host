@@ -4,6 +4,7 @@ keys:
   - &vaultwarden age1nzxq4dn3mnkzl44lxx7ew0mlyfj0jgx7wlenpadq3ej6m332dagsqltxa6
   - &stirlingpdf age1gcsaxljg3g0vqstpaefg8mlk9fscne8nc0cunyazwvy8thzy544sd2clk6
   - &monitoring age1fa62sq6cfl4ljwvcv9drnr3wz92vxvmzgajskqwep9jmdvtqygmqdyw6ml
+  - &minecraft age179acfxqzyn7maup9kmhxvg0rcw4xqzfyl28gaexlnekqrupnzcksefecje
 creation_rules:
   - path_regex: infra/secrets.yaml
     key_groups:
@@ -22,6 +23,10 @@ creation_rules:
       - pgp: [ *paul ]
 
   - path_regex: infra/monitoring/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+
+  - path_regex: infra/minecraft/secrets.yaml
     key_groups:
       - pgp: [ *paul ]
 
@@ -45,3 +50,7 @@ creation_rules:
       - pgp: [ *paul ]
         age: [ *monitoring ]
 
+  - path_regex: hosts/minecraft/secrets.yaml
+    key_groups:
+      - pgp: [ *paul ]
+        age: [ *minecraft ]

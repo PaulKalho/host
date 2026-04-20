@@ -104,6 +104,23 @@
             }
           ];
         };
+
+        minecraft = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            {
+              nixpkgs.overlays = [ overlay-unstable ];
+            }
+            ./hosts/minecraft/configuration.nix
+            ./hosts/minecraft/disk-configuration.nix
+            ./hosts/modules/users.nix
+            disko.nixosModules.disko
+            sops-nix.nixosModules.default
+            {
+              sops.defaultSopsFile = ./hosts/stirlingpdf/secrets.yaml;
+            }
+          ];
+        };
       };
     };
 }

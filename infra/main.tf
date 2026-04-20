@@ -13,3 +13,7 @@ module "stirlingpdf" {
 module "monitoring" {
   source = "./monitoring"
 }
+
+module "minecraft" {
+  source = "./minecraft"
+}
